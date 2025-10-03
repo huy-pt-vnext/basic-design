@@ -1,15 +1,3 @@
-CREATE TABLE accounts (
-    account_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    partner_company_id BIGINT NOT NULL,
-    partner_user_id BIGINT NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by UUID,
-    updated_by UUID,
-    deleted_at TIMESTAMP,
-    deleted BOOLEAN DEFAULT FALSE
-);
 
 -- 2. brands
 CREATE TABLE brands (
@@ -77,9 +65,9 @@ CREATE TABLE stores (
     updated_by UUID,
     deleted_at TIMESTAMP,
     deleted BOOLEAN DEFAULT false,
-    CONSTRAINT fk_stores_brands_brand_id 
+    CONSTRAINT fk_stores_brands_brand_id
         FOREIGN KEY (brand_id) REFERENCES brands(brand_id),
-    CONSTRAINT fk_stores_municipalities_municipality_code 
+    CONSTRAINT fk_stores_municipalities_municipality_code
         FOREIGN KEY (municipality_code) REFERENCES prefecture_municipalities(municipality_code)
 );
 
@@ -94,7 +82,7 @@ CREATE TABLE notifications (
     jump_url VARCHAR(500),
     is_top BOOLEAN,
     list_size VARCHAR(20) NOT NULL DEFAULT 'normal',
-    list_target JSON,
+    list_target JSONB,
     publish_start TIMESTAMP,
     publish_end TIMESTAMP,
     push_enabled BOOLEAN,
@@ -129,7 +117,7 @@ CREATE TABLE flyers (
     partner_user_id BIGINT NOT NULL,
     title VARCHAR(191) NOT NULL,
     content TEXT NOT NULL,
-    list_target JSON,
+    list_target JSONB,
     publish_start TIMESTAMP,
     publish_end TIMESTAMP,
     push_flag BOOLEAN DEFAULT FALSE,
