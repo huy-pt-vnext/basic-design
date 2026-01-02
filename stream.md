@@ -22,6 +22,12 @@ outputStream.pause();
 ```
 +  👉 Transform không push thêm
 + Lúc này Transform.highWaterMark = 16KB => transform chỉ nhận trong memory từ S3 stream 16kb(không hơn), nó tự trigger nói rằng, tôi tạm thời không nhận, nên đừng gửi => 👉 Upstream S3 dừng tạm thời
++ 🔥 ĐIỂM QUAN TRỌNG pause():
+  + dừng emit data
+  + KHÔNG destroy
+  + stream vẫn tồn tại
+  + Upstream bị backpressure
+  + 👉 Tại đây: outputStream ⏸️ (đứng im)
 
 ### 4️⃣ Nói cách khác (câu này quan trọng)
 + highWaterMark của Transform = giới hạn nội bộ pipeline
@@ -29,4 +35,23 @@ outputStream.pause();
 + Hai cái:
   + độc lập
   + nhưng phối hợp với nhau để ổn định
+
+### Bước 5️⃣: Đăng ký res.once('drain')
+```ts
+res.once('drain', () => {
+  if (!aborted) {
+    outputStream.resume();
+  }
+});
+```
++ Khi client đọc kịp → socket flush → buffer rỗng
++ ➡ callback drain chạy
+
+Tiếp theo: outputStream.resume();
+👉 Sau resume():
++ outputStream tiếp tục emit data
++ Control quay lại đầu callback on('data')
++ Flow lặp lại từ đầu
+
+
 
